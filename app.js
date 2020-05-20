@@ -69,7 +69,7 @@ var UIController = (function() {
             return {
                 type : document.querySelector(domStrings.inputType).value,
                 description : document.querySelector(domStrings.inputDescription).value,
-                value : document.querySelector(domStrings.inputValue).value
+                value : parseFloat(document.querySelector(domStrings.inputValue).value)
             };
         },
         addListItem: function (obj, type){
@@ -93,6 +93,23 @@ var UIController = (function() {
 
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
         },
+
+        clearFileds : function() {
+            var fields, fieldsArr;
+
+            //will return LIST -> convert to Array
+            fields = document.querySelectorAll(domStrings.inputDescription + ', ' + domStrings.inputValue);
+
+            fieldsArr = Array.prototype.slice.call(fields);
+            console.log(fieldsArr);
+
+            fieldsArr.forEach(function(current, index, array) {
+                current.value = "";
+            });
+
+            fieldsArr[0].focus();
+        },
+
         getDomStrings: function() {
             return domStrings;
         }
@@ -115,12 +132,30 @@ var controller = (function (budgetCtrl, UICtrl) {
         });
     }
 
-    var ctrlAddItem = function () {
-        var input = UICtrl.getInput();
+    var updateBudget = function() {
+        //1. Caculate the budget
 
-        var newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+        //2. Return the budget
+
+        //3. display the budget on the UI
+
+    };
+
+    var ctrlAddItem = function () {
+        var newItem, input;
+        
+        input = UICtrl.getInput();
+
+        if(input.description !== "" && !isNaN(input.value) && input.value > 0) {
+        newItem = budgetCtrl.addItem(input.type, input.description, input.value);
         
         UICtrl.addListItem(newItem, input.type);
+
+        UICtrl.clearFileds();
+
+        //calculate and update budget
+        updateBudget();
+        }
     }
 
     return {
