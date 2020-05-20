@@ -55,22 +55,46 @@ var budgetController = (function() {
 //UI Controller
 var UIController = (function() {
 
-    var domString = {
+    var domStrings = {
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue:'.add__value',
-        inputBtn: '.add__btn'
+        inputBtn: '.add__btn',
+        incomeContainer: '.income__list',
+        expensesContainer: '.expenses__list'
     };
 
     return {
         getInput : function() {
-            return {type : document.querySelector(domString.inputType).value,
-            description : document.querySelector(domString.inputDescription).value,
-            value : document.querySelector(domString.inputValue).value
+            return {
+                type : document.querySelector(domStrings.inputType).value,
+                description : document.querySelector(domStrings.inputDescription).value,
+                value : document.querySelector(domStrings.inputValue).value
+            };
+        },
+        addListItem: function (obj, type){
+            var html, newHtml, element;
+            //create HTML string with place holdertxt
+            if (type === 'inc') {
+                element = domStrings.incomeContainer;
+                
+                html = '<div class="item clearfix" id="inc-%id%"> <div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            } else if (type === 'exp') {
+                element = domStrings.expensesContainer;
+                
+                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
+
+            //Replace placeholder txt with at\ctual data
+            newHtml = html.replace('%id%', obj.id);
+            newHtml = newHtml.replace('%description%',obj.description);
+            newHtml = newHtml.replace('%value%',obj.value);
+            //inster the html
+
+            document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
         },
         getDomStrings: function() {
-            return domString;
+            return domStrings;
         }
     } 
 
@@ -95,7 +119,8 @@ var controller = (function (budgetCtrl, UICtrl) {
         var input = UICtrl.getInput();
 
         var newItem = budgetCtrl.addItem(input.type, input.description, input.value);
-        console.log(input);
+        
+        UICtrl.addListItem(newItem, input.type);
     }
 
     return {
