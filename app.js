@@ -56,6 +56,20 @@ var budgetController = (function() {
             
         }, 
 
+        deleteItem: function(type, id) {
+            var ids, index;
+
+            ids = data.allItems[type].map(function(current) {
+                return current.id;
+            });
+
+            index = ids.indexOf(id);
+
+            if(index !== -1) {
+                data.allItems[type].splice(index, 1);
+            }
+        },
+
         calculateBudget : function() {
             // calculate total inc and exp
             calculateTotal('exp');
@@ -100,7 +114,8 @@ var UIController = (function() {
         budgetLabel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expensesLabel: '.budget__expenses--value',
-        percentageLabel: '.budget__expenses--percentage'
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container'
     };
 
     return {
@@ -131,6 +146,11 @@ var UIController = (function() {
             //inster the html
 
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+        },
+
+        deleteListItem: function(selectorID) {
+            var el = document.getElementById(selectorID);
+            el.parentNode.removeChild(el);
         },
 
         clearFileds : function() {
@@ -182,6 +202,8 @@ var controller = (function (budgetCtrl, UICtrl) {
                 ctrlAddItem();
             }
         });
+
+        document.querySelector(Dom.container).addEventListener('click', ctrlDeleteItem);
     }
 
     var updateBudget = function() {
@@ -210,6 +232,28 @@ var controller = (function (budgetCtrl, UICtrl) {
 
         //calculate and update budget
         updateBudget();
+        }
+    }
+
+    var ctrlDeleteItem = function(event) {
+        var itemId, type, ID;
+
+        itemId = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+        if(itemId) {
+            //inc-1
+            splitId = itemId.split('-');
+            type = splitId[0];
+            ID = parseInt(splitId[1]);
+
+            // 1. Delete items from datastructure
+            budgetCtrl.deleteItem(type, ID);
+
+            // 2. Delete items from UI
+            UICtrl.deleteListItem(itemId);
+
+            // 3. Update and show the new budget
+            updateBudget();
         }
     }
 
